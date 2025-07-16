@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.api import podcast
-from app.core.config import settings
+
 from app.db.database import init_db
-from app.core.scheduler import start_scheduler
-from app.core.jwt_middleware import JWTAuthMiddleware
+
+
 from fastapi.middleware.cors import CORSMiddleware
 
 # @asynccontextmanager

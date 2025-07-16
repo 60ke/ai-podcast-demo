@@ -381,8 +381,7 @@ async def generate_text_stream(
     content_generator_llm_config: LLMConfig = None,
     script_generator_llm_config: LLMConfig = None,
     translator_llm_config: LLMConfig = None,
-    db: AsyncSession = None,
-    user_id: int = None
+    db: AsyncSession = None
 ) -> AsyncGenerator[str, None]:
     """
     生成文本流的异步生成器函数
@@ -433,15 +432,12 @@ async def generate_text_stream(
         # 流式返回最终脚本
         final_script = result["final_script"]
         
-        # 计算大概字数
-        word_count = len(final_script.replace('\n', '').replace(' ', ''))
-        
         # 将脚本分段流式返回，无需延迟
         paragraphs = final_script.split('\n\n')
         
-        # 如果提供了数据库会话和用户ID，保存脚本到数据库
-        if db and user_id:
-            from app.models.podcast_task import Podcast
+        # 如果提供了数据库会话，保存脚本到数据库
+        if db:
+            from app.models.podcast import Podcast
             
             # 提取脚本摘要（使用前100个字符）
             summary = content[:100] + "..." if len(content) > 100 else content
@@ -449,23 +445,16 @@ async def generate_text_stream(
             # 处理voice_ids格式
             voice_ids_str = ','.join(voices) if voices else ""
             
-            # 为演示目的创建一个临时MP3 URL
-            mp3_url = f"https://example.com/podcasts/{hash(final_script)}.mp3"
-            
-            # 创建标签
-            tags = contentType or "未分类"
+
+
             
             # 创建新的播客记录
             new_podcast = Podcast(
-                user_id=user_id,
                 content=summary,
                 voice_ids=voice_ids_str,
-                tags=tags,
-                mp3_url=mp3_url,
                 transcript=final_script,
-                ai_tags=contentType,
-                duration=int(word_count / 5),  # 粗略估计，5个字/秒
-                like_count=0
+                content_type=contentType,
+                title=summary
             )
             
             # 保存到数据库
