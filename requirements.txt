@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+aiomysql
+APScheduler
+langchain
+langchain-core
+langchain-openai
+langgraph
+typing-extensions
+pydantic
+pydantic-settings
+python-dotenv
+PyJWT
+greenlet
+httpx[socks]
